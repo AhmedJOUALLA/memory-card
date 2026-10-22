@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import CardList from "./components/CardList";
+import Scoreboard from "./components/Scoreboard";
 
 
 const names = [
@@ -20,6 +21,11 @@ const names = [
 function App() {
   const [players, setPlayers] = useState([]);
 
+  const [clickedIds, setClickedIds] = useState([]);
+  const [bestScore, setBestScore] = useState(0);
+
+  
+  const score = clickedIds.length;
   useEffect(() => {
     const requests = names.map((name) =>
       axios.get(
@@ -43,10 +49,25 @@ function App() {
       });
   }, []);
 
+  const handleClick = (id) => {
+    if (clickedIds.includes(id)) {
+      setBestScore(Math.max(bestScore, score)) 
+        setClickedIds([])
+    } else {
+      const newClickedIds = [...clickedIds, id]
+      setClickedIds(newClickedIds) 
+      if (newClickedIds.length > bestScore) {
+        setBestScore(newClickedIds.length) 
+      }
+    }
+   
+  }
+
   return (
     <div>
-            <h1>Memory Card Game</h1>
-      <CardList players={players} />
+      <h1>Memory Card Game</h1>
+      <Scoreboard score={score} bestScore={bestScore}   />
+      <CardList players={players} onCardClick={handleClick} />
     </div>
   );
 }
