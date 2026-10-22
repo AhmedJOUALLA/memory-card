@@ -33,8 +33,8 @@ function App() {
   const [clickedIds, setClickedIds] = useState([]);
   const [bestScore, setBestScore] = useState(0);
 
-  
   const score = clickedIds.length;
+  const hasWon = players.length > 0 && score === players.length;
   useEffect(() => {
     const requests = names.map((name) =>
       axios.get(
@@ -72,12 +72,29 @@ function App() {
     setPlayers(shuffle(players))
   }
 
+  const handleRestart = () => {
+    setClickedIds([]) 
+    setPlayers(shuffle(players))
+    
+  }
+
 
   return (
     <div>
       <h1>Memory Card Game</h1>
-      <Scoreboard score={score} bestScore={bestScore}   />
-      <CardList players={players} onCardClick={handleClick} />
+      <Scoreboard score={score} bestScore={bestScore} />
+      {hasWon ?
+        (
+          <div>
+            <h3>You win</h3>
+            <p>You clicked all {players.length} cards without repeating.</p>
+            <button onClick={handleRestart}>Play again</button>
+          </div>
+        ) : (
+          <CardList players={players} onCardClick={handleClick} />
+        )
+      }
+      
     </div>
   );
 }
